@@ -1,0 +1,72 @@
+// 5A.js - Session Management Example
+
+const express = require('express');
+const session = require('express-session');
+
+const app = express();
+
+// Configure session middleware
+app.use(session({
+  secret: 'abc',          // Secret key to sign the session ID cookie
+  resave: false,           // Don't save session if unmodified
+  saveUninitialized: true  // Save uninitialized sessions
+}));
+
+// Login route - creates a session
+app.get('/login', (req, res) => {
+  req.session.username = 'Ambika';
+  res.send('User logged in');
+});
+
+// Profile route - protected page
+app.get('/profile', (req, res) => {
+  if (req.session.username) {
+    res.send(Welcome ${req.session.username});
+  } else {
+    res.send('Please login first');
+  }
+});
+
+// Logout route - destroys session
+app.get('/logout', (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      return res.send('Error logging out');
+    }
+    res.send('User logged out');
+  });
+});
+
+// Start server
+app.listen(3000, () => {
+  console.log('Server running at http://localhost:3000');
+});
+
+/*
+Steps to Run:
+
+1. Check Node.js and npm versions:
+   node -v
+   npm -v
+
+2. Initialize npm project (if not already):
+   npm init -y
+
+3. Install dependencies:
+   npm install express express-session
+
+4. Run the program:
+   node 5A.js
+
+5. Test in browser:
+   - Visit http://localhost:3000/login     → Session created
+   - Visit http://localhost:3000/profile   → Shows username
+   - Visit http://localhost:3000/logout    → Session destroyed
+   - Visit http://localhost:3000/profile   → Asks to login again
+
+Output Example:
+1. /login      → "User logged in"
+2. /profile    → "Welcome Ambika"
+3. /logout     → "User logged out"
+4. /profile    → "Please login first"
+*/
